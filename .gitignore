@@ -1,0 +1,6 @@
+.idea/
+deployment/
+deployment/*
+node_modules/
+node_modules/*
+config.json

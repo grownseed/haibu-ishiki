@@ -1,0 +1,33 @@
+{
+  "name": "haibu-ishiki",
+  "description": "Wrapper for haibu, http-proxy and carapace with automatic node versions",
+  "version": "0.0.1",
+  "author": {
+    "name": "Hadrien Jouet",
+    "email": "hj@grownseed.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/grownseed/haibu-ikishi"
+  },
+  "keywords": [
+    "haibu",
+    "ikishi",
+    "carapace",
+    "http-proxy",
+    "automated node versions"
+  ],
+  "dependencies": {
+    "union": "0.3.6",
+    "flatiron": "0.3.3",
+    "haibu": "0.9.7",
+    "semver": "1.1.2"
+  },
+  "main": "index.js",
+  "bin": {
+    "ishiki": "index.js"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  }
+}

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var haibu = require('haibu'),
   flatiron = require('flatiron'),
   app = flatiron.app,

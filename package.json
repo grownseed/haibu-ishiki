@@ -26,8 +26,9 @@
     "http-proxy": "0.8.7"
   },
   "main": "index.js",
+  "preferGlobal": true,
   "bin": {
-    "ishiki": "index.js"
+    "ishiki": "./index.js"
   },
   "engines": {
     "node": ">= 0.8.0"

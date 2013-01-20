@@ -14,15 +14,13 @@ app.config.file({file: 'config.json'});
 app.config.defaults({
   host: '127.0.0.1',
   port: '8080',
-  'public-port': 880,
-  'deploy-dir': 'deployment',
+  'public-port': 80,
+  'deploy-dir': path.join(__dirname, 'deployment'),
   'port-range': {
     min: 9080,
     max: 10080
   },
   haibu: {
-    address: 'dynamic',
-    port: 9002,
     env: 'development',
     'advanced-replies': true,
     useraccounts: true,
@@ -45,7 +43,7 @@ if (!fs.existsSync(app.config.get('deploy-dir')))
 
 //make haibu paths relative to root of ishiki
 Object.keys(app.config.get('haibu:directories')).forEach(function(key) {
-  var fullpath = path.join(__dirname, app.config.get('deploy-dir'), app.config.get('haibu:directories:' + key));
+  var fullpath = path.join(app.config.get('deploy-dir'), app.config.get('haibu:directories:' + key));
 
   app.config.set('haibu:directories:' + key, fullpath);
 

@@ -1,4 +1,22 @@
 {
   "host": "127.0.0.1",
-  "port": "8080"
+  "port": "8080",
+  "public-port": "80",
+  "deploy-dir": "deployment",
+  "port-range": {
+    "min": "9080",
+    "max": "10080"
+  },
+  "haibu": {
+    "env": "development",
+    "advanced-replies": true,
+    "useraccounts": true,
+    "coffee": true,
+    "directories": {
+      "node-installs": "node-installs",
+      "packages": "packages",
+      "apps": "apps",
+      "tmp": "tmp"
+    }
+  }
 }

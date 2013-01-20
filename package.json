@@ -21,7 +21,8 @@
     "union": "0.3.6",
     "flatiron": "0.3.3",
     "haibu": "0.9.7",
-    "semver": "1.1.2"
+    "semver": "1.1.2",
+    "tar": "0.1.14"
   },
   "main": "index.js",
   "bin": {

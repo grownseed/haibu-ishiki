@@ -26,11 +26,13 @@ app.config.defaults({
       'node-installs': 'node-installs',
       packages: 'packages',
       apps: 'apps',
-      tmp: 'tmp',
-
+      tmp: 'tmp'
     }
   }
 });
+
+//extend drone
+drone.deployOnly = require('./lib/drone.extend');
 
 //create deployment dir if doesn't exist
 if (!fs.existsSync(app.config.get('deploy-dir')))

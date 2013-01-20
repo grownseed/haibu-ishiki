@@ -60,9 +60,15 @@ drone.packagesDir = app.config.get('haibu:directories:packages');
 if (app.config.get('haibu'))
   haibu.config.defaults(app.config.get('haibu'));
 
-//define routes
+
+//set up proxy
 var http_proxy = require('./lib/proxy').Proxy,
   proxy = new http_proxy(app, haibu);
+
+//start default proxy
+proxy.start(app.config.get('public-port'));
+
+//define routes
 require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
 
 //start ishiki

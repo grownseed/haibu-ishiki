@@ -14,7 +14,12 @@ app.config.file({file: 'config.json'});
 app.config.defaults({
   host: '127.0.0.1',
   port: '8080',
+  'public-port': 880,
   'deploy-dir': 'deployment',
+  'port-range': {
+    min: 9080,
+    max: 10080
+  },
   haibu: {
     address: 'dynamic',
     port: 9002,
@@ -56,7 +61,9 @@ if (app.config.get('haibu'))
   haibu.config.defaults(app.config.get('haibu'));
 
 //define routes
-require('./lib/ishiki')(app, haibu, path, fs, drone);
+var http_proxy = require('./lib/proxy').Proxy,
+  proxy = new http_proxy(app, haibu);
+require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
 
 //start ishiki
 app.start(app.config.get('port'), app.config.get('host'), function() {

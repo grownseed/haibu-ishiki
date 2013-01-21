@@ -141,6 +141,19 @@ Returns all routes for given user/app for proxy on given port
 #### `/proxies/:port/:userid/delete` (`POST`)
 Deletes route for given user/app for proxy on given port
 
+## Things to check before deploying an app
+
+### Domains
+
+In your app's `package.json`, make sure you have at least one of `domain`, `domains`, `subdomain` and `subdomains`.
+These can be arrays or space-separated list of domains. These are used for proxy mapping. If not specified you can
+always set a new proxy route manually using the API.
+
+### Port
+
+When your app runs a server, make sure it listens on `process.env.PORT`. While it still works without, it ensures that
+Ishiki will use one of the ports within the proxy port range defined in your configuration.
+
 ## Dependencies
 
 * [union (0.3.6)](https://github.com/flatiron/union/tree/v0.3.6)
@@ -160,6 +173,7 @@ Deletes route for given user/app for proxy on given port
 * automatically restart drones on server start
 * add user authentication and permissions
 * allow for persistent proxy routes
+* user/app logs and log streaming
 * tighten security for each user/drone
 * create an easy-to-use client NPM module to work with Ishiki
 * create a client interface for the browser

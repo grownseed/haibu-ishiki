@@ -23,10 +23,20 @@ Ishiki is provided as is and, as it stands, should not be used for production.
 npm install haibu-ishiki
 ```
 
-Or to install globally:
+Usage:
+```bash
+node ./node_modules/haibu-ishiki/index.js
+```
+
+Or to install globally (preferred):
 
 ```bash
 npm install haibu-ishiki -g
+```
+
+Usage:
+```bash
+ishiki
 ```
 
 ## Configuration

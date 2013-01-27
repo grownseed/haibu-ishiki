@@ -35,6 +35,21 @@ BaseModel.prototype.process = function(data, pre) {
   return data;
 };
 
+BaseModel.prototype.getProcessed = function(filter, callback) {
+  var self = this;
+
+  this.get(filter, function(err, result) {
+    if (err)
+      return callback(err);
+
+    for (var i in result) {
+      result[i] = self.process(result[i]);
+    }
+
+    callback(null, result);
+  });
+};
+
 BaseModel.prototype.createOrUpdate = function(pkg, callback) {
   var self = this;
 

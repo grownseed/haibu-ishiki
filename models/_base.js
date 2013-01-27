@@ -7,7 +7,11 @@ var BaseModel = exports.BaseModel = function(options) {
 };
 
 //retrieve one entry if id passed, or several if {} passed
-BaseModel.prototype.get = function(filter, callback) {
+BaseModel.prototype.get = function(filter, options, callback) {
+  if (!callback) {
+    callback = options;
+    options = {};
+  }
   if (!callback) {
     callback = filter;
     filter = {};
@@ -27,7 +31,7 @@ BaseModel.prototype.get = function(filter, callback) {
         });
       }
       else if (typeof filter == 'object') {
-        collection.find(filter).toArray(function(err, data) {
+        collection.find(filter, {}, options).toArray(function(err, data) {
           if (err)
             callback(err);
           else

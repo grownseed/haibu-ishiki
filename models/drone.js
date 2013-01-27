@@ -5,9 +5,15 @@ var BaseModel = require('./_base').BaseModel,
 var illegal_chars = ['/', '\\', '.', ' ', '"', '*', '<', '>', ':', '|', '?'],
   escape_with = '__';
 
+var DroneModel = function() {
+  DroneModel.super_.apply(this, arguments);
+};
+
+util.inherits(DroneModel, BaseModel);
+
 //processes mongodb illegal characters in keys
 //pre to true preprocesses, otherwise postprocesses
-BaseModel.prototype.process = function(data, pre) {
+DroneModel.prototype.process = function(data, pre) {
   var self = this;
 
   Object.keys(data).forEach(function(key) {
@@ -35,7 +41,7 @@ BaseModel.prototype.process = function(data, pre) {
   return data;
 };
 
-BaseModel.prototype.getProcessed = function(filter, callback) {
+DroneModel.prototype.getProcessed = function(filter, callback) {
   var self = this;
 
   this.get(filter, function(err, result) {
@@ -50,7 +56,7 @@ BaseModel.prototype.getProcessed = function(filter, callback) {
   });
 };
 
-BaseModel.prototype.createOrUpdate = function(pkg, callback) {
+DroneModel.prototype.createOrUpdate = function(pkg, callback) {
   var self = this;
 
   if (pkg._id) delete pkg._id;
@@ -79,4 +85,4 @@ BaseModel.prototype.createOrUpdate = function(pkg, callback) {
   });
 };
 
-module.exports = new BaseModel({collection: 'drone'});
+module.exports = new DroneModel({collection: 'drone'});

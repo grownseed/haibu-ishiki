@@ -93,6 +93,9 @@ var http_proxy = require('./lib/proxy').Proxy,
 //start default proxy
 proxy.start(app.config.get('public-port'));
 
+//load persistent proxy routes
+proxy.autoload();
+
 //define routes
 require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
 

@@ -15,7 +15,8 @@
     "ikishi",
     "carapace",
     "http-proxy",
-    "automated node versions"
+    "automated node versions",
+    "deployment"
   ],
   "dependencies": {
     "union": "0.3.6",
@@ -23,7 +24,8 @@
     "haibu": "0.9.7",
     "semver": "1.1.2",
     "tar": "0.1.14",
-    "http-proxy": "0.8.7"
+    "http-proxy": "0.8.7",
+    "mongodb": "1.2.x"
   },
   "main": "index.js",
   "preferGlobal": true,

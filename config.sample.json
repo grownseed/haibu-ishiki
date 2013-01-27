@@ -7,6 +7,11 @@
     "min": "9080",
     "max": "10080"
   },
+  "mongodb": {
+    "host": "127.0.0.1",
+    "port": "27017",
+    "database": "ishiki"
+  },
   "haibu": {
     "env": "development",
     "advanced-replies": true,

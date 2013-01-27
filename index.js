@@ -22,6 +22,11 @@ app.config.defaults({
     min: 9080,
     max: 10080
   },
+  mongodb: {
+    host: '127.0.0.1',
+    port: 27017,
+    database: 'ishiki'
+  },
   haibu: {
     env: 'development',
     'advanced-replies': true,
@@ -33,6 +38,26 @@ app.config.defaults({
       apps: 'apps',
       tmp: 'tmp'
     }
+  }
+});
+
+//instantiate db
+var mongo = require('mongodb'),
+  Server = mongo.Server,
+  Db = mongo.Db,
+  Bson = mongo.BSONPure;
+
+var server = new Server(app.config.get('mongodb:host'), app.config.get('mongodb:port'), {auto_reconnect: true});
+
+db = new Db(app.config.get('mongodb:database'), server, {safe: true}, {strict: false});
+
+db.open(function(err, db) {
+  var mongo_path = app.config.get('mongodb:host') + ':' + app.config.get('mongodb:port') + '/' + app.config.get('mongodb:database');
+
+  if (!err) {
+    console.log('Connected to ' + mongo_path);
+  }else{
+    console.log('Could not connect to ' + mongo_path);
   }
 });
 

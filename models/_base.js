@@ -7,7 +7,7 @@ var BaseModel = exports.BaseModel = function(options) {
 };
 
 //retrieve one entry if id passed, or several if {} passed
-BaseModel.prototype.get = function(filter, options, callback) {
+BaseModel.prototype.get = function(filter, options, callback, stream) {
   if (!callback) {
     callback = options;
     options = {};
@@ -31,12 +31,18 @@ BaseModel.prototype.get = function(filter, options, callback) {
         });
       }
       else if (typeof filter == 'object') {
-        collection.find(filter, {}, options).toArray(function(err, data) {
-          if (err)
-            callback(err);
-          else
-            callback(null, data);
-        });
+        if (!stream) {
+          collection.find(filter, {}, options).toArray(function(err, data) {
+            if (err)
+              callback(err);
+            else
+              callback(null, data);
+          });
+        }else{
+          var db_stream = collection.find(filter, {}, {tailable: true, timeout: false}).stream();
+
+          callback(null, db_stream);
+        }
       }
     }
   });

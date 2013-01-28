@@ -27,6 +27,7 @@ app.config.defaults({
     port: 27017,
     database: 'ishiki'
   },
+  'logs-size': 100000,
   haibu: {
     env: 'development',
     'advanced-replies': true,
@@ -56,6 +57,9 @@ db.open(function(err, db) {
 
   if (!err) {
     console.log('Connected to ' + mongo_path);
+
+    //ensure log collection is a capped one
+    db.createCollection('log', {capped: true, size: app.config.get('logs-size')}, function(err, response) {});
   }else{
     console.log('Could not connect to ' + mongo_path);
   }

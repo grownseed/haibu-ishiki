@@ -12,6 +12,7 @@
     "port": "27017",
     "database": "ishiki"
   },
+  "logs-size": 100000,
   "haibu": {
     "env": "development",
     "advanced-replies": true,

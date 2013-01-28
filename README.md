@@ -371,7 +371,7 @@ curl -X POST <ishiki-ip>:<ishiki-port>/proxies/1234
 
 #### `/proxies/:port/set` (`POST`)
 Updates or creates an arbitrary route for proxy on given port with source `domain`
-and target `host` and `port` provided in `POST`
+and target `host` and `port` provided in `POST`. Routes created like this will be re-loaded when Ishiki restarts
 
 ##### Call example
 ```bash

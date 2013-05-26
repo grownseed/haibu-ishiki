@@ -21,10 +21,10 @@
   "dependencies": {
     "union": "0.3.6",
     "flatiron": "0.3.3",
-    "haibu": "0.9.7",
+    "haibu": "0.10.1",
     "semver": "1.1.2",
-    "tar": "0.1.14",
-    "http-proxy": "0.8.7",
+    "tar": "0.1.17",
+    "http-proxy": "0.10.2",
     "mongodb": "1.2.x"
   },
   "main": "index.js",

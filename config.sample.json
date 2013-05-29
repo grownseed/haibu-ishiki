@@ -1,6 +1,11 @@
 {
   "host": "127.0.0.1",
   "port": "8080",
+  "https": {
+    "cert": "cert/ishiki.crt",
+    "key": "cert/ishiki.key",
+    "ca": "cert/ca.pem"
+  },
   "public-port": "80",
   "deploy-dir": "deployment",
   "port-range": {

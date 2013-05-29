@@ -26,12 +26,11 @@
 
 var haibu = require('haibu'),
   flatiron = require('flatiron'),
+  flatiron_options = {},
   app = flatiron.app,
   drone = new haibu.drone.Drone(),
   path = require('path'),
   fs = require('fs');
-
-app.use(flatiron.plugins.http, {});
 
 //load configuration
 app.config.file({file: 'config.json'});
@@ -66,11 +65,16 @@ app.config.defaults({
   }
 });
 
+//check for SSL cert
+if (app.config.get('https'))
+  flatiron_options.https = app.config.get('https');
+
+app.use(flatiron.plugins.http, flatiron_options);
+
 //instantiate db
 var mongo = require('mongodb'),
   Server = mongo.Server,
-  Db = mongo.Db,
-  Bson = mongo.BSONPure;
+  Db = mongo.Db;
 
 var server = new Server(app.config.get('mongodb:host'), app.config.get('mongodb:port'), {auto_reconnect: true});
 

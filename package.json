@@ -1,7 +1,7 @@
 {
   "name": "haibu-ishiki",
   "description": "Wrapper for haibu, http-proxy and carapace with automatic node versions",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": {
     "name": "Hadrien Jouet",
     "email": "hj@grownseed.net"

@@ -85,6 +85,23 @@ Copy `config.sample.js` to `config.js` and modify if you want your own settings.
 * `logs-size` is the cap on the `log` MongoDB collection where all the user/app logs go
 * `haibu` is whatever settings are available to the haibu module
 
+__Running Ishiki over HTTPS__
+
+If you specify `https` in your configuration file, Ishiki will automatically run over HTTPS instead of HTTP, e.g.:
+
+```json
+"https": {
+  "cert": "cert/ishiki.crt",
+  "key": "cert/ishiki.key",
+  "ca": "cert/ca.pem"
+}
+```
+
+All subsequent calls to Ishiki's API will need to take this into account, with cURL for instance, add the `-3` (or `--sslv3`) flag.
+
+The `ca` (certificate authority) can be omitted if using a self-signed certificate. You will also need to run cURL with
+the `-k` (or `--insecure`) flag to ignore the verification.
+
 <a name="api"/>
 ## API
 

@@ -98,9 +98,6 @@ db.open(function(err, db) {
   }
 });
 
-//extend drone
-drone.deployOnly = require('./lib/drone.extend');
-
 //create deployment dir if doesn't exist
 if (!fs.existsSync(app.config.get('deploy-dir')))
   fs.mkdirSync(app.config.get('deploy-dir'), '0755');
@@ -115,12 +112,13 @@ Object.keys(app.config.get('haibu:directories')).forEach(function(key) {
     fs.mkdirSync(fullpath, '0755');
 });
 
-//set drone packages dir manually
-drone.packagesDir = app.config.get('haibu:directories:packages');
-
 //configure haibu
 if (app.config.get('haibu'))
   haibu.config.defaults(app.config.get('haibu'));
+
+/*
+ Proxy API
+ */
 
 //set up proxy
 var http_proxy = require('./lib/proxy').Proxy,
@@ -132,8 +130,21 @@ proxy.start(app.config.get('public-port'));
 //load persistent proxy routes
 proxy.autoload();
 
-//define routes
+/*
+ Drones API
+ */
+
+//extend drone
+drone.deployOnly = require('./lib/drone.extend');
+
+//set drone packages dir manually
+drone.packagesDir = app.config.get('haibu:directories:packages');
+
 require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
+
+/*
+ Authentication API
+ */
 
 if (app.config.get('auth:active')) {
   //authentication

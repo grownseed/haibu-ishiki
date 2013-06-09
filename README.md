@@ -1,10 +1,11 @@
-# Haibu Ishiki
+# Ishiki
 
 Wrapper for [Haibu](https://github.com/nodejitsu/haibu) and [Http-Proxy](https://github.com/nodejitsu/node-http-proxy)
 
 ## What does it do?
 
-It makes running a Node deployment server as painless as possible.
+It makes running a Node deployment server as painless as possible. It is currently aimed at people with single-server
+installations who intend to run a small development platform.
 
 ## How does it work?
 
@@ -122,25 +123,59 @@ The `ca` (certificate authority) can be omitted if using a self-signed certifica
 the `-k` (or `--insecure`) flag to ignore the verification.
 
 <a name="api"/>
-## API
 
-Ishiki provides its own API.
+## API
 
 With authentication turned on (default), all calls (except for `/users/login`) will need to explicitly specify a `token` in the URL, such as:
 ```bash
 <http|https>://<ishiki-ip>:<ishiki-port>/<end-point>?token=<my-token>
 ```
 
-The authentication token can be created with the help of [`/users/login`](#login)
+The authentication token can be created with the help of [`/users/login`](#users_login_post)
 
 #### _Permissions_
+
 With the exception of logging in, permissions are as follow:
+
 * [__users__](#users): admins can perform any action for any user, non-admins can only update their own password
 * [__drones__](#drones): admins can performs any action for any user, non-admins can only perform actions relating to their own drones (where `/:userid` is present)
 * [__proxies__](#proxies): only admins may use this
 
+#### _Overview_
+
+* [Users](#users)
+ * [Get all users](#users_get)
+ * [Create a new user](#users_post)
+ * [Log-in (get an authentication token)](#users_login_post)
+ * [Update user details](#users_user_post)
+* [Drones](#drones)
+ * [Get all drones](#drones_get)
+ * [Get drones for a given user](#drones_user_get)
+ * [Get drone for a given user and app](#drones_user_app_get)
+ * [Get running drones](#drones_running_get)
+ * [Deploy an app](#drones_user_app_deploy_post)
+ * [Start an app](#drones_user_app_start_post)
+ * [Stop an app](#drones_user_app_stop_post)
+ * [Restart an app](#drones_user_app_restart_post)
+ * [Get app logs](#drones_user_app_logs_get)
+* [Proxies](#proxies)
+ * [Get all proxy routes](#proxies_get)
+ * [Get all proxy routes for a given port](#proxies_port_get)
+ * [Start a proxy on a new port](#proxies_port_post)
+ * [Manually create a proxy route on a given port](#proxies_port_set_post)
+ * [Stop proxy on a given port and clear its routes](#proxies_port_delete_proxy_post)
+ * [Delete proxy routes on a given port](#proxies_port_delete_route_post)
+ * [Get all proxy routes for a given user and port](#proxies_port_user_get)
+ * [Get all proxy routes for a given app, user and port](#proxies_port_user_app_get)
+ * [Delete routes for a given app, user and port](#proxies_port_user_app_delete_post)
+
+---
+
 <a name="users"/>
+
 ### Users
+
+<a name="users_get"/>
 
 #### `/users` (`GET`)
 Returns a list of all users
@@ -163,6 +198,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/users?token=<my-token>
 
 ---
 
+<a name="users_post"/>
+
 #### `/users` (`POST`)
 Creates a new user, if `password` is not provided, one will be generated. Set `admin` to `true` to give the new user admin rights.
 
@@ -182,7 +219,8 @@ curl -X POST -H 'Content-Type: application/json' -d '{"username": "myuser"}' <ht
 
 ---
 
-<a name="login"/>
+<a name="users_login_post"/>
+
 #### `/users/login` (`POST`)
 Returns an authentication token to be used for all other calls
 
@@ -198,6 +236,8 @@ curl -X POST -H 'Content-Type: application/json' -d '{"username": "myuser", "pas
 
 ---
 
+<a name="users_user_post"/>
+
 #### `/users/:userid` (`POST`)
 Updates a user, non-admin users can only update their own password, admins can update any details of any users with the exception of the `username`
 
@@ -212,7 +252,10 @@ curl -X POST -H 'Content-Type: application/json' -d '{"password": "mynewpassword
 ```
 
 <a name="drones"/>
+
 ### Drones
+
+<a name="drones_get"/>
 
 #### `/drones` (`GET`)
 Returns a list of all drones
@@ -252,6 +295,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones?token=<my-token>
 
 ---
 
+<a name="drones_user_get"/>
+
 #### `/drones/:userid` (`GET`)
 Returns all drones for a given user
 
@@ -264,6 +309,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1?token=<my-toke
 Same as `/drones` only with results being limited to specified user
 
 ---
+
+<a name="drones_user_app_get"/>
 
 #### `/drones/:userid/:appid` (`GET`)
 Returns drone info for given user/app
@@ -278,6 +325,8 @@ Same as `/drones` only with results being limited to specified user and app
 
 ---
 
+<a name="drones_running_get"/>
+
 #### `/drones/running` (`GET`)
 Returns all running drones
 
@@ -290,6 +339,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones/running?token=<my-to
 Same as `/drones` only with results being limited to drones that are started
 
 ---
+
+<a name="drones_user_app_deploy_post"/>
 
 #### `/drones/:userid/:appid/deploy` (`POST`)
 Deploys an app from a tarball for given user/app, with Curl from your app's directory:
@@ -307,6 +358,8 @@ The installation of Node will keep going regardless and the application will be 
 You can also check your application logs or the drones API to check the status of your drone.
 
 ---
+
+<a name="drones_user_app_start_post"/>
 
 #### `/drones/:userid/:appid/start` (`POST`)
 Starts a previously stopped drone for given user/app
@@ -344,6 +397,8 @@ curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/start?t
 
 ---
 
+<a name="drones_user_app_stop_post"/>
+
 #### `/drones/:userid/:appid/stop` (`POST`)
 Stops a running drone for given user/app
 
@@ -357,6 +412,8 @@ Same output as `/drones/:userid/:appid/start` with `started` set to `false`
 
 ---
 
+<a name="drones_user_app_restart_post"/>
+
 #### `/drones/:userid/:appid/restart` (`POST`)
 Restarts a running drone for given user/app
 
@@ -369,6 +426,8 @@ curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/restart
 Same output as `/drones/:userid/:appid/start`
 
 ---
+
+<a name="drones_user_app_logs_get"/>
 
 #### `/drones/:userid/:appid/logs` (`GET`)
 Returns or streams the logs for a given app with optional filtering
@@ -415,7 +474,10 @@ curl -X GET -H 'Content-Type: application/json' -d '{"stream": true}' <http|http
 ```
 
 <a name="proxies"/>
+
 ### Proxy
+
+<a name="proxies_get"/>
 
 #### `/proxies` (`GET`)
 Returns a list of all proxies and associated routes
@@ -449,6 +511,8 @@ The top key is the port the proxy runs on, all the children are the internal tar
 
 ---
 
+<a name="proxies_port_get"/>
+
 #### `/proxies/:port` (`GET`)
 Returns a list of all routes for proxy on given port
 
@@ -477,6 +541,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80?token=<my-token>
 
 ---
 
+<a name="proxies_port_post"/>
+
 #### `/proxies/:port` (`POST`)
 Starts a proxy on given port
 
@@ -491,6 +557,8 @@ curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/proxies/1234?token=<my-tok
 ```
 
 ---
+
+<a name="proxies_port_set_post"/>
 
 #### `/proxies/:port/set` (`POST`)
 Updates or creates an arbitrary route for proxy on given port with source `domain`
@@ -508,6 +576,8 @@ curl -X POST -H 'Content-Type: application/json' -d '{"port": "12500","host": "i
 
 ---
 
+<a name="proxies_port_delete_proxy_post"/>
+
 #### `/proxies/:port/delete_proxy` (`POST`)
 Stops and removes proxy and associated routes on given port
 
@@ -522,6 +592,8 @@ curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/proxies/1234/delete_proxy?
 ```
 
 ---
+
+<a name="proxies_port_delete_route_post"/>
 
 #### `/proxies/:port/delete_route` (`POST`)
 If `domain` is provided in `POST`, corresponding route will be removed from proxy on given port.
@@ -547,6 +619,8 @@ curl -X POST -H 'Content-Type: application/json' -d '{"domain":"my.domain"}' <ht
 ```
 
 ---
+
+<a name="proxies_port_user_get"/>
 
 #### `/proxies/:port/:userid` (`GET`)
 Returns all routes for given user for proxy on given port
@@ -576,6 +650,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/user1?token=<my-
 
 ---
 
+<a name="proxies_port_user_app_get"/>
+
 #### `/proxies/:port/:userid/:appid` (`GET`)
 Returns all routes for given user/app for proxy on given port
 
@@ -597,6 +673,8 @@ curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/user1/site1?toke
 ```
 
 ---
+
+<a name="proxies_port_user_app_delete_post"/>
 
 #### `/proxies/:port/:userid/:appid/delete` (`POST`)
 Deletes route for given user/app for proxy on given port
@@ -645,7 +723,7 @@ Ishiki will use one of the ports within the proxy port range defined in your con
 
 * [~~drone start/stop/restart API~~](https://github.com/grownseed/haibu-ishiki/commit/d889e89cb9d1fe225055d88c03a535223f9944c2)
 * [~~automatically restart drones on server start~~](https://github.com/grownseed/haibu-ishiki/commit/0c17c1ca8c8f84bd536176d33955118260ace4ea)
-* add user authentication and permissions
+* [~~add user authentication and permissions~~](https://github.com/grownseed/haibu-ishiki/commit/029598bdf23a6f7091c6beb3a7a7c8eabbb5e164)
 * [~~allow for persistent proxy routes~~](https://github.com/grownseed/haibu-ishiki/commit/b054cdb4e9bb9d9b0f95aa6a2acc3e66889f588e)
 * [~~user/app logs~~](https://github.com/grownseed/haibu-ishiki/commit/51145635d06fa6b78e4bd739d1c67e2612f65bb7) and [~~log streaming~~](https://github.com/grownseed/haibu-ishiki/commit/ed1a7d6f76c7a3974be7d6fb0fe7f18b9f73a78c)
 * tighten security for each user/drone

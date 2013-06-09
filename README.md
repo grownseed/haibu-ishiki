@@ -147,6 +147,7 @@ With the exception of logging in, permissions are as follow:
  * [Get all users](#users_get)
  * [Create a new user](#users_post)
  * [Log-in (get an authentication token)](#users_login_post)
+ * [Log-out](#users_logout_post)
  * [Update user details](#users_user_post)
 * [Drones](#drones)
  * [Get all drones](#drones_get)
@@ -232,6 +233,23 @@ curl -X POST -H 'Content-Type: application/json' -d '{"username": "myuser", "pas
 ##### Response
 ```json
 { "token" : "f2623f7d089e58069caf123bda4eba614b30b67e20f90074bf7dfd6241e2e0e1" }
+```
+
+---
+
+<a name="users_logout_post"/>
+
+#### `/users/logout` (`POST`)
+Revokes authentication token
+
+##### Call example
+```bash
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/users/logout?token=<my-token>
+```
+
+##### Response
+```json
+{ "message" : "You are no longer authenticated" }
 ```
 
 ---

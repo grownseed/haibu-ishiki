@@ -18,6 +18,11 @@
     "database": "ishiki"
   },
   "logs-size": 100000,
+  "auth": {
+    "active": true,
+    "admin": "ishiki",
+    "token_expiry": 1800
+  },
   "haibu": {
     "env": "development",
     "advanced-replies": true,

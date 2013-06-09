@@ -51,6 +51,11 @@ app.config.defaults({
     database: 'ishiki'
   },
   'logs-size': 100000,
+  auth: {
+    active: true,
+    admin: 'ishiki',
+    token_expiry: 1800
+  },
   haibu: {
     env: 'development',
     'advanced-replies': true,
@@ -117,7 +122,6 @@ drone.packagesDir = app.config.get('haibu:directories:packages');
 if (app.config.get('haibu'))
   haibu.config.defaults(app.config.get('haibu'));
 
-
 //set up proxy
 var http_proxy = require('./lib/proxy').Proxy,
   proxy = new http_proxy(app, haibu);
@@ -130,6 +134,15 @@ proxy.autoload();
 
 //define routes
 require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
+
+if (app.config.get('auth:active')) {
+  //authentication
+  var auth = require('./lib/auth').Auth,
+    user_auth = new auth(app, haibu);
+
+  //check permissions on each request
+  app.http.before.push(user_auth.check.bind(user_auth));
+}
 
 //start ishiki
 app.start(app.config.get('port'), app.config.get('host'), function() {

@@ -8,7 +8,7 @@ It makes running a Node deployment server as painless as possible.
 
 ## How does it work?
 
-After starting Ishiki, an [API](#api) will be made available. With this API, you can deploy applications and manage
+After starting Ishiki, an [API](#api) will become available. With this API, you can deploy applications and manage
 them. If your application requires a specific version of Node, it will be set up automatically for you. Each application
 will run on its own IP:port internally, while being proxied through the domains specified on your app on whatever public
 port you want your sites to run on (e.g. 80).
@@ -39,6 +39,19 @@ Usage:
 ishiki
 ```
 
+### First time
+
+When starting Ishiki for the first time, a default admin user will be created for you and a random password will be generated.
+Ishiki should output something along the lines of:
+
+```
+Initial admin account created:
+> username: ishiki
+> password: 12345667890abcdef
+```
+
+Make sure you take good note of the password (you can change it later).
+
 ## Configuration
 
 By default, Ishiki will run on the following settings:
@@ -59,6 +72,11 @@ By default, Ishiki will run on the following settings:
     "database": "ishiki"
   },
   "logs-size": 100000,
+  "auth": {
+    "active": true,
+    "admin": "ishiki",
+    "token_expiry": 1800
+  },
   "haibu": {
     "env": "development",
     "advanced-replies": true,
@@ -74,7 +92,7 @@ By default, Ishiki will run on the following settings:
 }
 ```
 
-Copy `config.sample.js` to `config.js` and modify if you want your own settings.
+Copy `config.sample.js` to `config.js` and modify it if you want your own settings.
 
 * `host` is the host Ishiki and its API will run on
 * `port` is the port Ishiki and its API will run on
@@ -83,6 +101,7 @@ Copy `config.sample.js` to `config.js` and modify if you want your own settings.
 * `port-range` is the range of ports the apps will listen on internally before being proxied
 * `mongodb` is the configuration for the MongoDB database
 * `logs-size` is the cap on the `log` MongoDB collection where all the user/app logs go
+* `auth` is for authentication. Set `active` to `false` to disable authentication, `admin` is the default admin username, `token_expiry` is the time in seconds a token can remain valid without activity (`false` for no expiry)
 * `haibu` is whatever settings are available to the haibu module
 
 __Running Ishiki over HTTPS__
@@ -105,8 +124,94 @@ the `-k` (or `--insecure`) flag to ignore the verification.
 <a name="api"/>
 ## API
 
-Ishiki provides its own API
+Ishiki provides its own API.
 
+With authentication turned on (default), all calls (except for `/users/login`) will need to explicitly specify a `token` in the URL, such as:
+```bash
+<http|https>://<ishiki-ip>:<ishiki-port>/<end-point>?token=<my-token>
+```
+
+The authentication token can be created with the help of [`/users/login`](#login)
+
+#### _Permissions_
+With the exception of logging in, permissions are as follow:
+* [__users__](#users): admins can perform any action for any user, non-admins can only update their own password
+* [__drones__](#drones): admins can performs any action for any user, non-admins can only perform actions relating to their own drones (where `/:userid` is present)
+* [__proxies__](#proxies): only admins may use this
+
+<a name="users"/>
+### Users
+
+#### `/users` (`GET`)
+Returns a list of all users
+
+#### Call example
+```bash
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/users?token=<my-token>
+```
+
+#### Response
+```json
+[ { "_id" : "51b12470b4a898d990000001",
+    "admin" : true,
+    "last_access" : "2013-06-08T22:47:22.828Z",
+    "password" : "$2a$10$TtuNxZzX3bHdQSURpLLv4OHZ1QjbW2Fy6yRs3Cv1p6w414OnoOnTi",
+    "token" : "d22b9961e33700436c76acfab2051ba73276b7fb5aa9e57bb1343fc9e5b1524f",
+    "username" : "ishiki"
+  } ]
+```
+
+---
+
+#### `/users` (`POST`)
+Creates a new user, if `password` is not provided, one will be generated. Set `admin` to `true` to give the new user admin rights.
+
+##### Call example
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '{"username": "myuser"}' <http|https>://<ishiki-ip>:<ishiki-port>/users?token=<my-token>
+```
+
+##### Response
+```json
+{ "_id" : "51b390b90808e68d93000067",
+  "admin" : false,
+  "password" : "52360f1b10488ae7",
+  "username" : "myuser"
+}
+```
+
+---
+
+<a name="login"/>
+#### `/users/login` (`POST`)
+Returns an authentication token to be used for all other calls
+
+##### Call example
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '{"username": "myuser", "password": "mypassword"}' <http|https>://<ishiki-ip>:<ishiki-port>/users/login
+```
+
+##### Response
+```json
+{ "token" : "f2623f7d089e58069caf123bda4eba614b30b67e20f90074bf7dfd6241e2e0e1" }
+```
+
+---
+
+#### `/users/:userid` (`POST`)
+Updates a user, non-admin users can only update their own password, admins can update any details of any users with the exception of the `username`
+
+##### Call example
+```bash
+curl -X POST -H 'Content-Type: application/json' -d '{"password": "mynewpassword"}' <http|https>://<ishiki-ip>:<ishiki-port>/users/myuser?token=<my-token>
+```
+
+#### Response
+```json
+{ "message" : "Updated password" }
+```
+
+<a name="drones"/>
 ### Drones
 
 #### `/drones` (`GET`)
@@ -114,7 +219,7 @@ Returns a list of all drones
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/drones
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones?token=<my-token>
 ```
 
 ##### Response
@@ -152,7 +257,7 @@ Returns all drones for a given user
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/drones/user1
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1?token=<my-token>
 ```
 
 ##### Response
@@ -165,7 +270,7 @@ Returns drone info for given user/app
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/drones/user1/site1
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1?token=<my-token>
 ```
 
 ##### Response
@@ -178,7 +283,7 @@ Returns all running drones
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/drones/running
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/drones/running?token=<my-token>
 ```
 
 ##### Response
@@ -191,7 +296,7 @@ Deploys an app from a tarball for given user/app, with Curl from your app's dire
 
 ##### Call example
 ```bash
-tar -cz . | curl -XPOST -m 360 -sSNT- <ishiki-ip>:<ishiki-port>/drones/user1/site1/deploy
+tar -cz . | curl -XPOST -m 360 -sSNT- <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/deploy?token=<my-token>
 ```
 
 ##### Response
@@ -208,7 +313,7 @@ Starts a previously stopped drone for given user/app
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/drones/user1/site1/start
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/start?token=<my-token>
 ```
 
 ##### Response
@@ -244,7 +349,7 @@ Stops a running drone for given user/app
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/drones/user1/site1/stop
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/stop?token=<my-token>
 ```
 
 ##### Response
@@ -257,7 +362,7 @@ Restarts a running drone for given user/app
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/drones/user1/site1/restart
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/restart?token=<my-token>
 ```
 
 ##### Response
@@ -275,7 +380,7 @@ Returns or streams the logs for a given app with optional filtering
 
 ##### Call example - basic
 ```bash
-curl -X GET -H 'Content-Type: application/json' -d '{"limit": 2}' <ishiki-ip>:<ishiki-port>/drones/user1/site1/logs
+curl -X GET -H 'Content-Type: application/json' -d '{"limit": 2}' <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/logs?token=<my-token>
 ```
 
 ##### Response (JSON)
@@ -299,7 +404,7 @@ curl -X GET -H 'Content-Type: application/json' -d '{"limit": 2}' <ishiki-ip>:<i
 
 ##### Call example - streaming
 ```bash
-curl -X GET -H 'Content-Type: application/json' -d '{"stream": true}' <ishiki-ip>:<ishiki-port>/drones/user1/site1/logs
+curl -X GET -H 'Content-Type: application/json' -d '{"stream": true}' <http|https>://<ishiki-ip>:<ishiki-port>/drones/user1/site1/logs?token=<my-token>
 ```
 
 ##### Response (plain text)
@@ -309,6 +414,7 @@ curl -X GET -H 'Content-Type: application/json' -d '{"stream": true}' <ishiki-ip
 ...
 ```
 
+<a name="proxies"/>
 ### Proxy
 
 #### `/proxies` (`GET`)
@@ -316,7 +422,7 @@ Returns a list of all proxies and associated routes
 
 ##### Call example
 ```bash
-`curl -X GET <ishiki-ip>:<ishiki-port>/proxies`
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies?token=<my-token>
 ```
 
 ##### Response
@@ -348,7 +454,7 @@ Returns a list of all routes for proxy on given port
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/proxies/80
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80?token=<my-token>
 ```
 
 ##### Response example
@@ -376,7 +482,7 @@ Starts a proxy on given port
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/proxies/1234
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/proxies/1234?token=<my-token>
 ```
 
 ##### Response
@@ -392,7 +498,7 @@ and target `host` and `port` provided in `POST`. Routes created like this will b
 
 ##### Call example
 ```bash
-curl -X POST -H 'Content-Type: application/json' -d '{"port": "12500","host": "internal.ip","domain": "my.domain"}' <ishiki-ip>:<ishiki-port>/proxies/80/set
+curl -X POST -H 'Content-Type: application/json' -d '{"port": "12500","host": "internal.ip","domain": "my.domain"}' <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/set?token=<my-token>
 ```
 
 ##### Response
@@ -407,7 +513,7 @@ Stops and removes proxy and associated routes on given port
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/proxies/1234/delete_proxy
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/proxies/1234/delete_proxy?token=<my-token>
 ```
 
 ##### Response
@@ -432,7 +538,7 @@ In this case `POST` can have any of the following values for matching:
 
 ##### Call example
 ```bash
-curl -X POST -H 'Content-Type: application/json' -d '{"domain":"my.domain"}' <ishiki-ip>:<ishiki-port>/proxies/1234/delete_route
+curl -X POST -H 'Content-Type: application/json' -d '{"domain":"my.domain"}' <http|https>://<ishiki-ip>:<ishiki-port>/proxies/1234/delete_route?token=<my-token>
 ```
 
 ##### Response
@@ -447,7 +553,7 @@ Returns all routes for given user for proxy on given port
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/proxies/80/user1
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/user1?token=<my-token>
 ```
 
 ##### Response
@@ -475,7 +581,7 @@ Returns all routes for given user/app for proxy on given port
 
 ##### Call example
 ```bash
-curl -X GET <ishiki-ip>:<ishiki-port>/proxies/80/user1/site1
+curl -X GET <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/user1/site1?token=<my-token>
 ```
 
 ##### Response
@@ -497,7 +603,7 @@ Deletes route for given user/app for proxy on given port
 
 ##### Call example
 ```bash
-curl -X POST <ishiki-ip>:<ishiki-port>/proxies/80/user1/site1/delete
+curl -X POST <http|https>://<ishiki-ip>:<ishiki-port>/proxies/80/user1/site1/delete?token=<my-token>
 ```
 
 ##### Response
@@ -522,11 +628,12 @@ Ishiki will use one of the ports within the proxy port range defined in your con
 
 * [union (0.3.6)](https://github.com/flatiron/union/tree/v0.3.6)
 * [flatiron (0.3.3)](https://github.com/flatiron/flatiron/tree/v0.3.3)
-* [haibu (0.9.7)](https://github.com/nodejitsu/haibu)
+* [haibu (0.10.1)](https://github.com/nodejitsu/haibu/tree/v0.10.1)
 * [semver (1.1.2)](https://github.com/isaacs/node-semver/tree/v1.1.2)
-* [tar (0.1.14)](https://github.com/isaacs/node-tar/tree/v0.1.14)
-* [http-proxy (0.8.7)](https://github.com/nodejitsu/node-http-proxy/tree/v0.8.7)
-* [mongodb (1.2.x)](https://github.com/mongodb/node-mongodb-native/tree/V1.2.10)
+* [tar (0.1.17)](https://github.com/isaacs/node-tar/tree/v0.1.17)
+* [http-proxy (0.10.2)](https://github.com/nodejitsu/node-http-proxy/tree/v0.10.2)
+* [mongodb (1.2.x)](https://github.com/mongodb/node-mongodb-native/tree/V1.2.14)
+* [bcrypt (0.7.x)](https://github.com/ncb000gt/node.bcrypt.js/tree/0.7.5)
 
 ## Requirements
 

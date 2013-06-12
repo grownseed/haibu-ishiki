@@ -1,7 +1,7 @@
 {
   "name": "haibu-ishiki",
   "description": "Node deployment server - wrapper for haibu, http-proxy and carapace with permissions and automatic node versions",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "author": {
     "name": "Hadrien Jouet",
     "email": "hj@grownseed.net"
@@ -12,7 +12,7 @@
   },
   "keywords": [
     "haibu",
-    "ikishi",
+    "ishiki",
     "carapace",
     "http-proxy",
     "automated node versions",
@@ -28,12 +28,12 @@
     "mongodb": "1.2.x",
     "bcrypt": "0.7.x"
   },
-  "main": "index.js",
+  "main": "./bin/ishiki",
   "preferGlobal": true,
   "bin": {
-    "ishiki": "./index.js"
+    "ishiki": "./bin/ishiki"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": "0.8.x"
   }
 }

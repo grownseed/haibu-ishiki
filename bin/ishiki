@@ -33,14 +33,14 @@ var haibu = require('haibu'),
   fs = require('fs');
 
 //load configuration
-app.config.file({file: 'config.json'});
+app.config.use('file', {file: path.join(__dirname, '..', 'config.json')});
 
 //configuration default values
 app.config.defaults({
   host: '127.0.0.1',
   port: '8080',
   'public-port': 80,
-  'deploy-dir': path.join(__dirname, 'deployment'),
+  'deploy-dir': path.join(__dirname, '..', 'deployment'),
   'port-range': {
     min: 9080,
     max: 10080
@@ -121,7 +121,7 @@ if (app.config.get('haibu'))
  */
 
 //set up proxy
-var http_proxy = require('./lib/proxy').Proxy,
+var http_proxy = require('../lib/proxy').Proxy,
   proxy = new http_proxy(app, haibu);
 
 //start default proxy
@@ -135,12 +135,12 @@ proxy.autoload();
  */
 
 //extend drone
-drone.deployOnly = require('./lib/drone.extend');
+drone.deployOnly = require('../lib/drone.extend');
 
 //set drone packages dir manually
 drone.packagesDir = app.config.get('haibu:directories:packages');
 
-require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
+require('../lib/ishiki')(app, haibu, path, fs, drone, proxy);
 
 /*
  Authentication API
@@ -148,7 +148,7 @@ require('./lib/ishiki')(app, haibu, path, fs, drone, proxy);
 
 if (app.config.get('auth:active')) {
   //authentication
-  var auth = require('./lib/auth').Auth,
+  var auth = require('../lib/auth').Auth,
     user_auth = new auth(app, haibu);
 
   //check permissions on each request

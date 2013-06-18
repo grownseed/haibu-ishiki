@@ -28,7 +28,7 @@ npm install haibu-ishiki
 
 Usage:
 ```bash
-node ./node_modules/haibu-ishiki/index.js
+node ./node_modules/haibu-ishiki/bin/ishiki
 ```
 
 Or to install globally (preferred):

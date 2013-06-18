@@ -2,6 +2,8 @@
 
 Wrapper for [Haibu](https://github.com/nodejitsu/haibu) and [Http-Proxy](https://github.com/nodejitsu/node-http-proxy)
 
+Please refer to [Hachi](https://github.com/grownseed/hachi) for a simple API client module and command line tool.
+
 ## What does it do?
 
 It makes running a Node deployment server as painless as possible. It is currently aimed at people with single-server
@@ -745,7 +747,7 @@ Ishiki will use one of the ports within the proxy port range defined in your con
 * [~~allow for persistent proxy routes~~](https://github.com/grownseed/haibu-ishiki/commit/b054cdb4e9bb9d9b0f95aa6a2acc3e66889f588e)
 * [~~user/app logs~~](https://github.com/grownseed/haibu-ishiki/commit/51145635d06fa6b78e4bd739d1c67e2612f65bb7) and [~~log streaming~~](https://github.com/grownseed/haibu-ishiki/commit/ed1a7d6f76c7a3974be7d6fb0fe7f18b9f73a78c)
 * tighten security for each user/drone
-* create an easy-to-use client NPM module to work with Ishiki
+* [~~create an easy-to-use client NPM module to work with Ishiki~~](https://github.com/grownseed/hachi)
 * create a client interface for the browser
 
 ## License

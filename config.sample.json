@@ -9,8 +9,8 @@
   "public-port": "80",
   "deploy-dir": "deployment",
   "port-range": {
-    "min": "9080",
-    "max": "10080"
+    "min": 9080,
+    "max": 10080
   },
   "mongodb": {
     "host": "127.0.0.1",

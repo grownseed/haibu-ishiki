@@ -95,7 +95,7 @@ By default, Ishiki will run on the following settings:
 }
 ```
 
-Copy `config.sample.js` to `config.js` and modify it if you want your own settings.
+Copy `config.sample.json` to `config.json` and modify it if you want your own settings.
 
 * `host` is the host Ishiki and its API will run on
 * `port` is the port Ishiki and its API will run on

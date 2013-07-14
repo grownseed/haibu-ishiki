@@ -95,7 +95,29 @@ By default, Ishiki will run on the following settings:
 }
 ```
 
-Copy `config.sample.json` to `config.json` and modify it if you want your own settings.
+__Specifying Config Settings__
+
+There is a `config.sample.json` file that you can modify with your own settings.
+
+Inside the directory where `haibu-ishiki` is installed, you can copy the sample file to `config.json`:
+
+```bash
+ishiki
+```
+
+Or, you can use the `-l` or `--local` flag to load the `config.json` file relative to where you ran the command:
+
+```bash
+ishiki -l # Will load from ./config.json
+```
+
+Or, manage multiple config files by providing a filename to `-l` or `--local`:
+
+```bash
+ishiki -l config-prod.json # Will load from ./config-prod.json
+```
+
+__Config Options__
 
 * `host` is the host Ishiki and its API will run on
 * `port` is the port Ishiki and its API will run on
@@ -732,6 +754,7 @@ Ishiki will use one of the ports within the proxy port range defined in your con
 * [http-proxy (0.10.2)](https://github.com/nodejitsu/node-http-proxy/tree/v0.10.2)
 * [mongodb (1.2.x)](https://github.com/mongodb/node-mongodb-native/tree/V1.2.14)
 * [bcrypt (0.7.x)](https://github.com/ncb000gt/node.bcrypt.js/tree/0.7.5)
+* [commander (1.3.0)](https://github.com/visionmedia/commander.js/tree/1.3.0)
 
 ## Requirements
 

@@ -66,9 +66,35 @@ app.config.defaults({
       packages: 'packages',
       apps: 'apps',
       tmp: 'tmp'
-    }
-  }
+    },
+  },
+  crossdomain: false,
 });
+
+//allow cross domain
+if (app.config.get('crossdomain')) {
+  flatiron_options.headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers' : 'X-Requested-With'
+  };
+  flatiron_options.before = [
+    //Cross Origin Plugins to process OPTIONS (preflight) request
+    function(req, res, next) {
+      if (req.method === 'OPTIONS') {
+        res.writeHead(200, {
+          'Access-Control-Allow-Origin' : '*', //NO control...
+          'Access-Control-Allow-Headers' : req.headers['access-control-request-headers'] || 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept',
+          'Access-Control-Allow-Methods': 'POST, GET, PUT, DELETE, OPTIONS',
+          'Access-Control-Allow-Credentials': false,
+          'Access-Control-Max-Age' :  '86400' // 24 hours
+        });
+        res.end();
+      } else {
+        next();
+      }
+    }
+  ];
+}
 
 //check for SSL cert
 if (app.config.get('https'))

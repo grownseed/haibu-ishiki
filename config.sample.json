@@ -34,5 +34,6 @@
       "apps": "apps",
       "tmp": "tmp"
     }
-  }
+  },
+  crossdomain: false
 }

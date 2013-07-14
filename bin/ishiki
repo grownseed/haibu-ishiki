@@ -31,10 +31,11 @@ var haibu = require('haibu'),
   drone = new haibu.drone.Drone(),
   path = require('path'),
   fs = require('fs'),
-  program = require('commander');
+  program = require('commander'),
+  pjson = require('../package.json');
 
 program
-  .version('0.2.2')
+  .version(pjson.version)
   .option('-l, --local [filename]', 'Use a local config file. If filename isn\'t specified, defaults to config.json')
   .parse(process.argv);
 

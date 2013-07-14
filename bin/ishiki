@@ -30,10 +30,27 @@ var haibu = require('haibu'),
   app = flatiron.app,
   drone = new haibu.drone.Drone(),
   path = require('path'),
-  fs = require('fs');
+  fs = require('fs'),
+  program = require('commander'),
+  pjson = require('../package.json');
 
-//load configuration
-app.config.use('file', {file: path.join(__dirname, '..', 'config.json')});
+program
+  .version(pjson.version)
+  .option('-l, --local [filename]', 'Use a local config file. If filename isn\'t specified, defaults to config.json')
+  .parse(process.argv);
+
+var config_file;
+if(!program.local) {
+  config_file = path.join(__dirname, '..', 'config.json');
+} else if(program.local === true) {
+  config_file = path.join(process.cwd(), 'config.json');
+} else {
+  config_file = path.join(process.cwd(), program.local);
+}
+
+console.log('Loading config from ' + config_file);
+
+app.config.use('file', {file: config_file});
 
 //configuration default values
 app.config.defaults({

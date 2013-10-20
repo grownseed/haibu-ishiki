@@ -91,7 +91,8 @@ By default, Ishiki will run on the following settings:
       "apps": "apps",
       "tmp": "tmp"
     }
-  }
+  },
+  "crossdomain": false
 }
 ```
 
@@ -156,6 +157,8 @@ With authentication turned on (default), all calls (except for `/users/login`) w
 ```
 
 The authentication token can be created with the help of [`/users/login`](#users_login_post)
+
+To enable CORS (for crossdomain usage), set `crossdomain` to true in your config.json. 
 
 #### _Permissions_
 
